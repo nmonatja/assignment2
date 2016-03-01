@@ -31,5 +31,14 @@ InventoryItem:
 	just fill out the parameters you want to update, leave others null and they will not be overwritten
 	
 	remove() returns true if the item was sucessfully removed
+	
+You can compile this code by doing:
+	
+	javac Inventory.java SeedInventory.java InventoryItem.java SeedItem.java DbItem.java Test.java
 
+And then run Test via the command line:
+	
+	java -cp .:[FULL PATH TO MYSQL JAR]/mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar Test
+
+But I am going to package everything up into a jar that you can import into NetBeans when I'm done.
 
