@@ -10,7 +10,7 @@ import java.sql.ResultSet;
  ***********************************************/
 
 
-public class SeedItem extends DbItem implements InventoryItem {
+public class GenomicItem extends DbItem implements InventoryItem {
 	
 	
 	String product_code;  // leaftech refers to this as productid
@@ -19,9 +19,9 @@ public class SeedItem extends DbItem implements InventoryItem {
 	float price; 
 	int deleted = 0;
 	
-	static final String database = "inventory";
+	static final String database = "leaftech";
 
-	public SeedItem(String code, String desc, int quant, float cost) {
+	public GenomicItem(String code, String desc, int quant, float cost) {
 		product_code = code;
 		description = desc;
 		quantity = quant;
@@ -40,19 +40,19 @@ public class SeedItem extends DbItem implements InventoryItem {
 		ArrayList<String> clauseBuilder = new ArrayList<String>();
 		
 		if (product_code != null ) {
-			clauseBuilder.add("product_code = '"+product_code+"'");
+			clauseBuilder.add("productid = '"+product_code+"'");
 		}
 		if (description != null) {
-			clauseBuilder.add("description = '"+description+"'");
+			clauseBuilder.add("productdescription = '"+description+"'");
 		}
 		if (quantity != null) {
-			clauseBuilder.add("quantity = "+quantity);
+			clauseBuilder.add("productquantity = "+quantity);
 		}
 		if (price != null) {
-			clauseBuilder.add("price = "+price);
+			clauseBuilder.add("productprice = "+price);
 		}
 		String sql = String.join(", ", clauseBuilder);
-		sql = "UPDATE seeds SET "+sql+" WHERE product_code = '"+this.product_code+"'";
+		sql = "UPDATE Genomics SET "+sql+" WHERE productid = '"+this.product_code+"'";
 		
 		//System.out.println(sql);
 		
@@ -79,7 +79,7 @@ public class SeedItem extends DbItem implements InventoryItem {
 		}
 		
 		int retVal = 0;
-		String sql = "DELETE from seeds WHERE product_code = '"+this.product_code+"'";
+		String sql = "DELETE from Genomics WHERE productid = '"+this.product_code+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);

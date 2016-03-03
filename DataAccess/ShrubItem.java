@@ -10,7 +10,7 @@ import java.sql.ResultSet;
  ***********************************************/
 
 
-public class SeedItem extends DbItem implements InventoryItem {
+public class ShrubItem extends DbItem implements InventoryItem {
 	
 	
 	String product_code;  // leaftech refers to this as productid
@@ -21,7 +21,7 @@ public class SeedItem extends DbItem implements InventoryItem {
 	
 	static final String database = "inventory";
 
-	public SeedItem(String code, String desc, int quant, float cost) {
+	public ShrubItem(String code, String desc, int quant, float cost) {
 		product_code = code;
 		description = desc;
 		quantity = quant;
@@ -52,7 +52,7 @@ public class SeedItem extends DbItem implements InventoryItem {
 			clauseBuilder.add("price = "+price);
 		}
 		String sql = String.join(", ", clauseBuilder);
-		sql = "UPDATE seeds SET "+sql+" WHERE product_code = '"+this.product_code+"'";
+		sql = "UPDATE Shrubs SET "+sql+" WHERE product_code = '"+this.product_code+"'";
 		
 		//System.out.println(sql);
 		
@@ -79,7 +79,7 @@ public class SeedItem extends DbItem implements InventoryItem {
 		}
 		
 		int retVal = 0;
-		String sql = "DELETE from seeds WHERE product_code = '"+this.product_code+"'";
+		String sql = "DELETE from Shrubs WHERE product_code = '"+this.product_code+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
