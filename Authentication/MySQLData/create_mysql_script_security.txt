@@ -1,0 +1,24 @@
+create database security;
+
+use security;
+
+CREATE TABLE Users
+(
+username varchar(255) NOT NULL,
+password varchar(255) NOT NULL,
+LastName varchar(255),
+FirstName varchar(255),
+UNIQUE (username )
+);
+
+CREATE TABLE LogonOff
+(
+username varchar(255) NOT NULL,
+logtimestamp timestamp NOT NULL,
+event varchar(10) NOT NULL
+);
+
+INSERT INTO Users (username,password) VALUES ("user1","user1");
+INSERT INTO Users (username,password) VALUES ("user2","user2");
+INSERT INTO Users (username,password) VALUES ("user3","user3");
+INSERT INTO Users (username,password) VALUES ("user4","user4");
