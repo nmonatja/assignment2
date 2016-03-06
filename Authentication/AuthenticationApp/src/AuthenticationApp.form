@@ -80,7 +80,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="User ID"/>
+        <Property name="text" type="java.lang.String" value="User name"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField1">

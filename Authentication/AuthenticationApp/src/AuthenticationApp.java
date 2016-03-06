@@ -1,6 +1,3 @@
-
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,14 +7,20 @@
 /**
  *
  * This app tests the authentication and logging functionality
+ * The user enters username and password in the UI.
+ * The authentication engine checks if the username/password 
+ * combination is valid. 
+ * A simple PasswordEncryptionService is used to encrypt/decrypt the passwords
+ * to avoid storing passwords in clear text.
  */
 
 public class AuthenticationApp extends javax.swing.JFrame {
 
     Boolean loggedon = false;
     //create a Session object - this will be used to track
-    //if session is logged on, logged off
+    //if session is logged on, logged off and other Session specific parameters (e.g. authorization)
     Session mySession = new Session();
+                              
     /**
      * Creates new form AuthenticationApp
      */
@@ -50,7 +53,7 @@ public class AuthenticationApp extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("User ID");
+        jLabel1.setText("User name");
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -148,28 +151,27 @@ public class AuthenticationApp extends javax.swing.JFrame {
         String userid = null;
         String password = null;
 
-        
-        
         // Check to make sure user enters needed logon information
         if ( jTextField1.getText().length() != 0 && jPasswordField1.getText().length() != 0)
         {
             fieldError = false;
             userid = jTextField1.getText();
             password = jPasswordField1.getText();
+            //attempt to logon with the given username/password
             loggedon = mySession.Logon (userid, password);
             
-        } else {
+        } else {//there is missing information in user input
 
             msgString = "Please enter user ID and password";
             jLabel3.setText("\n"+msgString);
             //jTextArea1.setText("\n"+msgString);
         }
 
-     
-        //Now, we try to connect to the inventory database.
+        //If able to logon, display the success message
         if (loggedon)
         {
             msgString = "Authentication success";
+            System.out.println(mySession.getAuthorizationLevel());
             jLabel3.setText("\n"+msgString);
         }
         else
@@ -188,17 +190,17 @@ public class AuthenticationApp extends javax.swing.JFrame {
         }
         else
         {
-            mySession.Logoff();
+            mySession.Logoff();//logoff the session
             jLabel3.setText("You successfully logged off");
             loggedon = false;
         }
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    //make sure to logoff the session if a user closes the UI
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
             mySession.Logoff();
-            jLabel3.setText("You successfully logged off");
             loggedon = false;
     }//GEN-LAST:event_formWindowClosing
 

@@ -1,0 +1,29 @@
+create database security;
+
+use security;
+
+
+CREATE TABLE LogonOff
+(
+username varchar(255) NOT NULL,
+logtimestamp timestamp NOT NULL,
+event varchar(32) NOT NULL
+);
+
+CREATE TABLE SecuredUsers
+(
+username varchar(255) NOT NULL,
+password varbinary (255)  NOT NULL,
+salt varbinary (255) NOT NULL,
+LastName varchar(255),
+FirstName varchar(255),
+UNIQUE (username )
+);
+
+
+CREATE TABLE UserAuthorization
+(
+username varchar(255) NOT NULL,
+authorization_level varchar(255) NOT NULL,
+UNIQUE (username )
+);
