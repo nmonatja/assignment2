@@ -19,13 +19,14 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 	}
 
 	/* return a list of all items of this type */
-	public ArrayList<ShrubItem> getAll() {
+	public ArrayList<ShrubItem> getAll() throws SelectException {
 		
 		ArrayList<ShrubItem> allShrubs = new ArrayList<ShrubItem>();
+		String sql = "select * from Shrubs";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Shrubs");
+			ResultSet rs = runResult(conn, sql);
 		
 			if (rs != null) {
 				while (rs.next()) {
@@ -41,18 +42,20 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return allShrubs;
 	}
 	
 	/* get a specific entry */
-	public ShrubItem getById(String id) {
+	public ShrubItem getById(String id) throws SelectException {
+		
+		String sql = "select * from Shrubs where product_code = '"+id+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Shrubs where product_code = '"+id+"'");
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				rs.first();
@@ -68,7 +71,7 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return null;
@@ -76,7 +79,7 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 	}
 	
 	/* search for an entry */
-	public ArrayList<ShrubItem> search(String product_code, String description, Integer quantity, Float price) {
+	public ArrayList<ShrubItem> search(String product_code, String description, Integer quantity, Float price) throws SelectException {
 		ArrayList<ShrubItem> searchShrubs = new ArrayList<ShrubItem>();
 		
 		ArrayList<String> clauseBuilder = new ArrayList<String>();
@@ -118,14 +121,14 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return searchShrubs;
 	}
 	
 	/* add a new type of inventory, if successful returns true */
-	public Boolean add(String product_code, String description, int quantity, float price) {
+	public Boolean add(String product_code, String description, int quantity, float price) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -140,7 +143,7 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {
@@ -150,7 +153,7 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 		
 	}
 	
-	public Boolean add(ShrubItem item) {
+	public Boolean add(ShrubItem item) throws InsertException {
 		//public <T extends InventoryItem> Boolean add(T item);
 		
 		int retVal = 0;
@@ -165,7 +168,7 @@ public class ShrubInventory extends DbItem implements Inventory<ShrubItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {

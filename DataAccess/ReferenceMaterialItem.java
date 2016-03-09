@@ -29,7 +29,7 @@ public class ReferenceMaterialItem extends DbItem implements InventoryItem {
 	}
 	
 	/* update an existing inventory record based on the product code, if successful returns true */
-	public Boolean update(String product_code, String description, Integer quantity, Float price) {
+	public Boolean update(String product_code, String description, Integer quantity, Float price) throws UpdateException {
 		
 		if (deleted != 0) {
 			System.out.println("This item has been deleted from the db");
@@ -61,7 +61,7 @@ public class ReferenceMaterialItem extends DbItem implements InventoryItem {
 			retVal = run(conn, sql);
 			closeDbConnection(conn);
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new UpdateException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal==1) {
@@ -71,7 +71,7 @@ public class ReferenceMaterialItem extends DbItem implements InventoryItem {
 		return false;
 	}
 	
-	public Boolean remove() {
+	public Boolean remove() throws DeleteException {
 		
 		if (deleted != 0) {
 			System.out.println("This item has been already deleted from the db");
@@ -86,7 +86,7 @@ public class ReferenceMaterialItem extends DbItem implements InventoryItem {
 			retVal = run(conn, sql);
 			closeDbConnection(conn);
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new DeleteException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal==1) {

@@ -19,13 +19,14 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 	}
 
 	/* return a list of all items of this type */
-	public ArrayList<ReferenceMaterialItem> getAll() {
+	public ArrayList<ReferenceMaterialItem> getAll() throws SelectException {
 		
 		ArrayList<ReferenceMaterialItem> allReferenceMaterials = new ArrayList<ReferenceMaterialItem>();
+		String sql = "select * from ReferenceMaterials";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from ReferenceMaterials");
+			ResultSet rs = runResult(conn, sql);
 		
 			if (rs != null) {
 				while (rs.next()) {
@@ -41,18 +42,20 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return allReferenceMaterials;
 	}
 	
 	/* get a specific entry */
-	public ReferenceMaterialItem getById(String id) {
+	public ReferenceMaterialItem getById(String id) throws SelectException {
+		
+		String sql = "select * from ReferenceMaterials where productid = '"+id+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from ReferenceMaterials where productid = '"+id+"'");
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				rs.first();
@@ -68,7 +71,7 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return null;
@@ -76,7 +79,7 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 	}
 	
 	/* search for an entry */
-	public ArrayList<ReferenceMaterialItem> search(String product_code, String description, Integer quantity, Float price) {
+	public ArrayList<ReferenceMaterialItem> search(String product_code, String description, Integer quantity, Float price) throws SelectException {
 		ArrayList<ReferenceMaterialItem> searchReferenceMaterials = new ArrayList<ReferenceMaterialItem>();
 		
 		ArrayList<String> clauseBuilder = new ArrayList<String>();
@@ -118,14 +121,14 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return searchReferenceMaterials;
 	}
 	
 	/* add a new type of inventory, if successful returns true */
-	public Boolean add(String product_code, String description, int quantity, float price) {
+	public Boolean add(String product_code, String description, int quantity, float price) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -140,7 +143,7 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {
@@ -150,7 +153,7 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 		
 	}
 	
-	public Boolean add(ReferenceMaterialItem item) {
+	public Boolean add(ReferenceMaterialItem item) throws InsertException {
 		//public <T extends InventoryItem> Boolean add(T item);
 		
 		int retVal = 0;
@@ -165,7 +168,7 @@ public class ReferenceMaterialInventory extends DbItem implements Inventory<Refe
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {

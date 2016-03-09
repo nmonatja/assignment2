@@ -30,7 +30,7 @@ public class OrderItem extends DbItem {
 		this.order_table = order_table;
 	}
 	
-	public Boolean update(String product_id, String description, Float item_price) {
+	public Boolean update(String product_id, String description, Float item_price) throws UpdateException {
 		
 		if (deleted != 0) {
 			System.out.println("This item has been deleted from the order");
@@ -58,7 +58,7 @@ public class OrderItem extends DbItem {
 			retVal = run(conn, sql);
 			closeDbConnection(conn);
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new UpdateException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal==1) {
@@ -68,7 +68,7 @@ public class OrderItem extends DbItem {
 		return false;
 	}
 	
-	public Boolean remove() {
+	public Boolean remove() throws DeleteException {
 		if (deleted != 0) {
 			System.out.println("This item has been deleted from the order");
 			return false;
@@ -82,7 +82,7 @@ public class OrderItem extends DbItem {
 			retVal = run(conn, sql);
 			closeDbConnection(conn);
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new DeleteException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal==1) {

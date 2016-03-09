@@ -19,13 +19,14 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 	}
 
 	/* return a list of all items of this type */
-	public ArrayList<CultureboxItem> getAll() {
+	public ArrayList<CultureboxItem> getAll() throws SelectException {
 		
+		String sql = "select * from Cultureboxes";
 		ArrayList<CultureboxItem> allCultureboxes = new ArrayList<CultureboxItem>();
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Cultureboxes");
+			ResultSet rs = runResult(conn, sql);
 		
 			if (rs != null) {
 				while (rs.next()) {
@@ -41,18 +42,20 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return allCultureboxes;
 	}
 	
 	/* get a specific entry */
-	public CultureboxItem getById(String id) {
+	public CultureboxItem getById(String id) throws SelectException {
+		
+		String sql = "select * from Cultureboxes where productid = '"+id+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Cultureboxes where productid = '"+id+"'");
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				rs.first();
@@ -68,7 +71,7 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return null;
@@ -76,7 +79,7 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 	}
 	
 	/* search for an entry */
-	public ArrayList<CultureboxItem> search(String product_code, String description, Integer quantity, Float price) {
+	public ArrayList<CultureboxItem> search(String product_code, String description, Integer quantity, Float price) throws SelectException {
 		ArrayList<CultureboxItem> searchCultureboxes = new ArrayList<CultureboxItem>();
 		
 		ArrayList<String> clauseBuilder = new ArrayList<String>();
@@ -118,14 +121,14 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return searchCultureboxes;
 	}
 	
 	/* add a new type of inventory, if successful returns true */
-	public Boolean add(String product_code, String description, int quantity, float price) {
+	public Boolean add(String product_code, String description, int quantity, float price) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -140,7 +143,7 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {
@@ -150,7 +153,7 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 		
 	}
 	
-	public Boolean add(CultureboxItem item) {
+	public Boolean add(CultureboxItem item) throws InsertException {
 		//public <T extends InventoryItem> Boolean add(T item);
 		
 		int retVal = 0;
@@ -165,7 +168,7 @@ public class CultureboxInventory extends DbItem implements Inventory<CultureboxI
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {

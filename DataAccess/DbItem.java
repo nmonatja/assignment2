@@ -9,7 +9,7 @@ public class DbItem {
 	
 	/* this provides the db methods */
 	
-	public Connection openDbConnection(String dbname) {
+	public Connection openDbConnection(String dbname) throws Exception {
 		
 		String SQLServerIP = "localhost";
 		
@@ -20,39 +20,36 @@ public class DbItem {
 		
 			return DBConn;
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw e;
 		}
-		return null;
 	}
 	
-	public void closeDbConnection(Connection DBConn) {
+	public void closeDbConnection(Connection DBConn) throws Exception {
 		try {
 			DBConn.close();
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw e;
 		}
 	}
 	
-	public int run(Connection DBConn, String SQLstatement) {
+	public int run(Connection DBConn, String SQLstatement) throws Exception {
 		try {
 			Statement s = DBConn.createStatement();
 			int executeUpdateVal = s.executeUpdate(SQLstatement);
 			return executeUpdateVal;
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw e;
 		}
-		return 0;
 	}
 	
-	public ResultSet runResult(Connection DBConn, String SQLstatement) {
+	public ResultSet runResult(Connection DBConn, String SQLstatement) throws Exception {
 		try {
 			Statement s = DBConn.createStatement();
 			ResultSet res = s.executeQuery(SQLstatement);
 			return res;
 
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw e;
 		}
-		return null;
 	}
 }

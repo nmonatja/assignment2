@@ -4,7 +4,7 @@ public class Test {
 	
 	public static void main(String[] args) {
 		
-		SeedInventory seed = new SeedInventory();
+		/* SeedInventory seed = new SeedInventory();
 		
 		ArrayList<SeedItem> seeds = seed.getAll();
 		
@@ -17,16 +17,16 @@ public class Test {
 		SeedItem sid = seed.getById("BP001");
 		System.out.println(sid);
 		
-		System.out.println("----------------------");
+		System.out.println("----------------------"); */
 		
 		/* get all the seeds where quanitity is 200 */
-		ArrayList<SeedItem> seeds2 = seed.search(null, null, 200, null);
+		/* ArrayList<SeedItem> seeds2 = seed.search(null, null, 200, null);
 		
 		for (SeedItem s : seeds2) {
 			System.out.println(s);
 		}
 		
-		System.out.println("----------------------");
+		System.out.println("----------------------"); */
 		
 		/* Test to add seeds two different ways */
 		/* Boolean result = seed.add("BC004", "Black Maui Flip-flops", 10, 50.0F); */
@@ -35,7 +35,7 @@ public class Test {
 
 		/* System.out.println(result); */
 		
-		SeedItem sid2 = new SeedItem("MB002", "Miniature Blue Candycorn", 10, 20.0F);
+		/* SeedItem sid2 = new SeedItem("MB002", "Miniature Blue Candycorn", 10, 20.0F);
 		Boolean result = sid2.update("MB222", null, null, null);
 		System.out.println(result);
 		
@@ -48,6 +48,25 @@ public class Test {
 		
 		for (SeedItem s : seeds3) {
 			System.out.println(s);
+		} */
+		
+		try {
+		
+			OrderInfo info = new OrderInfo();
+	
+			ArrayList<Order> orders = info.getAll();
+			for (Order o : orders) {
+				System.out.println(o);
+				System.out.println("----------------------"); 
+				ArrayList<OrderItem> items = o.getItems();
+		
+				for (OrderItem i : items) {
+					System.out.println(i);
+					System.out.println("----------------------"); 
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Error getting items: "+e);
 		}
 		
 		

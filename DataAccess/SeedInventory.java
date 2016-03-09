@@ -19,13 +19,14 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 	}
 
 	/* return a list of all items of this type */
-	public ArrayList<SeedItem> getAll() {
+	public ArrayList<SeedItem> getAll() throws SelectException {
 		
 		ArrayList<SeedItem> allSeeds = new ArrayList<SeedItem>();
+		String sql = "select * from seeds";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from seeds");
+			ResultSet rs = runResult(conn, sql);
 		
 			if (rs != null) {
 				while (rs.next()) {
@@ -41,18 +42,20 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return allSeeds;
 	}
 	
 	/* get a specific entry */
-	public SeedItem getById(String id) {
+	public SeedItem getById(String id) throws SelectException {
+		
+		String sql = "select * from seeds where product_code = '"+id+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from seeds where product_code = '"+id+"'");
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				rs.first();
@@ -68,7 +71,7 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return null;
@@ -76,7 +79,7 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 	}
 	
 	/* search for an entry */
-	public ArrayList<SeedItem> search(String product_code, String description, Integer quantity, Float price) {
+	public ArrayList<SeedItem> search(String product_code, String description, Integer quantity, Float price) throws SelectException {
 		ArrayList<SeedItem> searchSeeds = new ArrayList<SeedItem>();
 		
 		ArrayList<String> clauseBuilder = new ArrayList<String>();
@@ -118,14 +121,14 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return searchSeeds;
 	}
 	
 	/* add a new type of inventory, if successful returns true */
-	public Boolean add(String product_code, String description, int quantity, float price) {
+	public Boolean add(String product_code, String description, int quantity, float price) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -140,7 +143,7 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {
@@ -150,7 +153,7 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 		
 	}
 	
-	public Boolean add(SeedItem item) {
+	public Boolean add(SeedItem item) throws InsertException {
 		//public <T extends InventoryItem> Boolean add(T item);
 		
 		int retVal = 0;
@@ -165,7 +168,7 @@ public class SeedInventory extends DbItem implements Inventory<SeedItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {

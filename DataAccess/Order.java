@@ -38,7 +38,7 @@ public class Order extends DbItem {
 		this.order_table = order_table;
 	}
 	
-	public Boolean update(String order_date, String first_name, String last_name, String address, String phone, Float total_cost, Integer shipped, String order_table) {
+	public Boolean update(String order_date, String first_name, String last_name, String address, String phone, Float total_cost, Integer shipped, String order_table) throws UpdateException {
 		
 		if (deleted != 0) {
 			System.out.println("This order has been deleted from the db");
@@ -78,7 +78,7 @@ public class Order extends DbItem {
 			retVal = run(conn, sql);
 			closeDbConnection(conn);
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new UpdateException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal==1) {
@@ -88,7 +88,7 @@ public class Order extends DbItem {
 		return false;
 	}
 	
-	public Boolean remove() {
+	public Boolean remove() throws DeleteException {
 		
 		if (deleted != 0) {
 			System.out.println("This order has been deleted from the db");
@@ -103,7 +103,7 @@ public class Order extends DbItem {
 			retVal = run(conn, sql);
 			closeDbConnection(conn);
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new DeleteException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal==1) {
@@ -115,7 +115,7 @@ public class Order extends DbItem {
 		
 	}
 	
-	public ArrayList<OrderItem> getItems() {
+	public ArrayList<OrderItem> getItems() throws SelectException {
 		
 		if (deleted != 0) {
 			System.out.println("This order has been deleted from the db");
@@ -123,10 +123,11 @@ public class Order extends DbItem {
 		}
 			
 		ArrayList<OrderItem> items = new ArrayList<OrderItem>();
+		String sql = "select * from "+order_table;
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from "+order_table);
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				while (rs.next()) {
@@ -143,13 +144,13 @@ public class Order extends DbItem {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return items;
 	}
 	
-	public Integer addItem(OrderItem item) {
+	public Integer addItem(OrderItem item) throws InsertException {
 		
 		if (deleted != 0) {
 			System.out.println("This order has been deleted from the db");
@@ -175,7 +176,7 @@ public class Order extends DbItem {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return retVal;

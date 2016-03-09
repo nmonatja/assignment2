@@ -18,13 +18,14 @@ public class OrderInfo extends DbItem {
 	}
 	
 	/* get all orders */
-	public ArrayList<Order> getAll() {
+	public ArrayList<Order> getAll() throws SelectException {
 		
 		ArrayList<Order> allOrders = new ArrayList<Order>();
+		String sql = "select * from orders";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from orders");
+			ResultSet rs = runResult(conn, sql);
 		
 			if (rs != null) {
 				while (rs.next()) {
@@ -45,17 +46,19 @@ public class OrderInfo extends DbItem {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return allOrders;
 	}
 	
-	public Order getById(int id) {
+	public Order getById(int id) throws SelectException {
+		
+		String sql = "select * from orders where order_id = '"+id+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from orders where order_id = '"+id+"'");
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				rs.first();
@@ -76,13 +79,13 @@ public class OrderInfo extends DbItem {
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return null;
 	}
 	
-	public ArrayList<Order> search(Integer order_id, String order_date, String first_name, String last_name, String address, String phone, Float total_cost, Integer shipped, String order_table) {
+	public ArrayList<Order> search(Integer order_id, String order_date, String first_name, String last_name, String address, String phone, Float total_cost, Integer shipped, String order_table) throws SelectException {
 		
 		ArrayList<Order> searchOrders = new ArrayList<Order>();
 		
@@ -143,13 +146,13 @@ public class OrderInfo extends DbItem {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return searchOrders;
 	}
 	
-	public int add(String order_date, String first_name, String last_name, String address, String phone, Float total_cost, Integer shipped, String order_table) {
+	public int add(String order_date, String first_name, String last_name, String address, String phone, Float total_cost, Integer shipped, String order_table) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -172,13 +175,13 @@ public class OrderInfo extends DbItem {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return retVal;
 	} 
 	
-	public int add(Order o) {
+	public int add(Order o) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -201,7 +204,7 @@ public class OrderInfo extends DbItem {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return retVal;

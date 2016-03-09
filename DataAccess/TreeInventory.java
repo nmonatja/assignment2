@@ -19,13 +19,14 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 	}
 
 	/* return a list of all items of this type */
-	public ArrayList<TreeItem> getAll() {
+	public ArrayList<TreeItem> getAll() throws SelectException {
 		
 		ArrayList<TreeItem> allTrees = new ArrayList<TreeItem>();
+		String sql = "select * from Trees";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Trees");
+			ResultSet rs = runResult(conn, sql);
 		
 			if (rs != null) {
 				while (rs.next()) {
@@ -41,18 +42,20 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return allTrees;
 	}
 	
 	/* get a specific entry */
-	public TreeItem getById(String id) {
+	public TreeItem getById(String id) throws SelectException {
+		
+		String sql = "select * from Trees where product_code = '"+id+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Trees where product_code = '"+id+"'");
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				rs.first();
@@ -68,7 +71,7 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return null;
@@ -76,7 +79,7 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 	}
 	
 	/* search for an entry */
-	public ArrayList<TreeItem> search(String product_code, String description, Integer quantity, Float price) {
+	public ArrayList<TreeItem> search(String product_code, String description, Integer quantity, Float price) throws SelectException {
 		ArrayList<TreeItem> searchTrees = new ArrayList<TreeItem>();
 		
 		ArrayList<String> clauseBuilder = new ArrayList<String>();
@@ -118,14 +121,14 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return searchTrees;
 	}
 	
 	/* add a new type of inventory, if successful returns true */
-	public Boolean add(String product_code, String description, int quantity, float price) {
+	public Boolean add(String product_code, String description, int quantity, float price) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -140,7 +143,7 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {
@@ -150,7 +153,7 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 		
 	}
 	
-	public Boolean add(TreeItem item) {
+	public Boolean add(TreeItem item) throws InsertException {
 		//public <T extends InventoryItem> Boolean add(T item);
 		
 		int retVal = 0;
@@ -165,7 +168,7 @@ public class TreeInventory extends DbItem implements Inventory<TreeItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {

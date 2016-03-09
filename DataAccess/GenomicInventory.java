@@ -19,13 +19,14 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 	}
 
 	/* return a list of all items of this type */
-	public ArrayList<GenomicItem> getAll() {
+	public ArrayList<GenomicItem> getAll() throws SelectException {
 		
 		ArrayList<GenomicItem> allGenomics = new ArrayList<GenomicItem>();
+		String sql = "select * from Genomics";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Genomics");
+			ResultSet rs = runResult(conn, sql);
 		
 			if (rs != null) {
 				while (rs.next()) {
@@ -41,18 +42,20 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return allGenomics;
 	}
 	
 	/* get a specific entry */
-	public GenomicItem getById(String id) {
+	public GenomicItem getById(String id) throws SelectException {
+		
+		String sql = "select * from Genomics where productid = '"+id+"'";
 		
 		try {
 			Connection conn = openDbConnection(database);
-			ResultSet rs = runResult(conn, "select * from Genomics where productid = '"+id+"'");
+			ResultSet rs = runResult(conn, sql);
 			
 			if (rs != null) {
 				rs.first();
@@ -68,7 +71,7 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return null;
@@ -76,7 +79,7 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 	}
 	
 	/* search for an entry */
-	public ArrayList<GenomicItem> search(String product_code, String description, Integer quantity, Float price) {
+	public ArrayList<GenomicItem> search(String product_code, String description, Integer quantity, Float price) throws SelectException {
 		ArrayList<GenomicItem> searchGenomics = new ArrayList<GenomicItem>();
 		
 		ArrayList<String> clauseBuilder = new ArrayList<String>();
@@ -118,14 +121,14 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new SelectException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		return searchGenomics;
 	}
 	
 	/* add a new type of inventory, if successful returns true */
-	public Boolean add(String product_code, String description, int quantity, float price) {
+	public Boolean add(String product_code, String description, int quantity, float price) throws InsertException {
 		
 		int retVal = 0;
 		
@@ -140,7 +143,7 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {
@@ -150,7 +153,7 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 		
 	}
 	
-	public Boolean add(GenomicItem item) {
+	public Boolean add(GenomicItem item) throws InsertException {
 		//public <T extends InventoryItem> Boolean add(T item);
 		
 		int retVal = 0;
@@ -165,7 +168,7 @@ public class GenomicInventory extends DbItem implements Inventory<GenomicItem> {
 			closeDbConnection(conn);
 			
 		} catch (Exception e) {
-			System.out.println("Problem connecting to database:: " + e);
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
 		if (retVal == 1) {
