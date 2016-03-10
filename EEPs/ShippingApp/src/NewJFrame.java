@@ -1,5 +1,7 @@
 
 import java.sql.*;
+import java.util.Objects;
+import javax.swing.table.DefaultTableModel;
 
  /******************************************************************************
  * File:NewJFrame.java
@@ -20,14 +22,21 @@ import java.sql.*;
  */
 public class NewJFrame extends javax.swing.JFrame {
     Integer updateOrderID;
-    String versionID = "v2.10.10";
+    String versionID = "3.0.0";
     
     ShippingAppLogic  shippingApp = new ShippingAppLogic();
+    
+    Session mySession = new Session();
+    String  current_user_name = "";
     
     /** Creates new form NewJFrame */
     public NewJFrame() {
         initComponents();
         jLabel1.setText("Shipping Application " + versionID);
+        
+        ClearAllDisplayedInfo();
+        jButton6.setEnabled(false);
+        
     }
 
     /** This method is called from within the constructor to
@@ -39,11 +48,9 @@ public class NewJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTextArea5 = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -58,28 +65,38 @@ public class NewJFrame extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea3 = new javax.swing.JTextArea();
-        jLabel9 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         jTextArea4 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jTextField5 = new javax.swing.JTextField();
+        jButton6 = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
+        jTextField6 = new javax.swing.JTextField();
+        jButton5 = new javax.swing.JButton();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        jButton7 = new javax.swing.JButton();
+
+        jTextArea5.setColumns(20);
+        jTextArea5.setRows(5);
+        jScrollPane5.setViewportView(jTextArea5);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocationByPlatform(true);
+        setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Shipping Application");
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setEditable(false);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
-
-        jLabel3.setText("Server IP Address:");
-
-        jTextField1.setText("localhost");
 
         jTextField2.setEditable(false);
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
@@ -112,8 +129,8 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jLabel8.setText("Mailing Address");
 
-        jTextArea2.setColumns(20);
         jTextArea2.setEditable(false);
+        jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
         jScrollPane2.setViewportView(jTextArea2);
 
@@ -141,14 +158,7 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setText("Order Number : Order Date & Time: Customer Name");
-
-        jTextArea3.setColumns(20);
-        jTextArea3.setEditable(false);
-        jTextArea3.setRows(5);
-        jScrollPane3.setViewportView(jTextArea3);
-
-        jLabel9.setText("Order Items ");
+        jLabel10.setText("Order List");
 
         jLabel11.setText("Messages");
 
@@ -159,8 +169,8 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
 
-        jTextArea4.setColumns(20);
         jTextArea4.setEditable(false);
+        jTextArea4.setColumns(20);
         jTextArea4.setRows(5);
         jScrollPane4.setViewportView(jTextArea4);
 
@@ -173,66 +183,144 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton6.setText("LogOff");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setText("Currently Logged on User :");
+
+        jTextField6.setEditable(false);
+
+        jButton5.setText("Exit");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Number", "Status", "Date & Time", "Customer Name"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane6.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Item ID", "Product ID", "Description", "Price ($)"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable2);
+        jTable2.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        jLabel3.setText("Order Items");
+
+        jButton7.setText("Clear");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
+                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 894, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 894, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 551, Short.MAX_VALUE)
-                                .addComponent(jLabel1)
-                                .addGap(228, 228, 228))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 715, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 716, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(187, 187, 187)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE))
+                                .addComponent(jLabel2)
+                                .addContainerGap(345, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(10, 10, 10)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel2)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 351, Short.MAX_VALUE))
-                                    .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE))))
-                        .addGap(45, 45, 45))
+                                .addComponent(jTextField5)
+                                .addGap(244, 244, 244))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel9)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel12)
+                                .addGap(18, 18, 18)
+                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane4)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel11)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton7))
+                            .addComponent(jLabel10)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel10))
-                        .addContainerGap())))
+                            .addComponent(jLabel8)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 716, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(18, 18, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jScrollPane2)
+                                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE))
+                                        .addGap(11, 11, 11)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -240,21 +328,18 @@ public class NewJFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
+                .addComponent(jButton2)
                 .addGap(8, 8, 8)
                 .addComponent(jButton4)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(jLabel4)
-                .addGap(10, 10, 10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jLabel6)
@@ -268,20 +353,30 @@ public class NewJFrame extends javax.swing.JFrame {
                     .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(10, 10, 10)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(14, 14, 14)
-                        .addComponent(jLabel11))
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(jButton7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton6)
+                        .addComponent(jButton5))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel12)
+                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())))
         );
 
         pack();
@@ -294,106 +389,175 @@ public class NewJFrame extends javax.swing.JFrame {
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField4ActionPerformed
-
-    private void ShowPendingOrders()
+    private Boolean AuthenticateUser()
     {
-        OpResult result;
+        Boolean validSession = false;
         
-        jTextArea1.setText("");
-        jTextArea4.setText("");
-        
+        if(!mySession.isLoggedOn())
+        {
+            LoginDialog dialog = new LoginDialog(new javax.swing.JFrame(), true);
+            
+            while(!dialog.userAbort)
+            {    
+                dialog.setVisible(true);
+
+                if(!Objects.equals(dialog.user_name, new String(""))) 
+                {
+                    validSession = mySession.Logon(dialog.user_name, dialog.password);
+                    if(validSession)
+                    {
+                        current_user_name = dialog.user_name;
+                        /*enable log off button*/
+                        jButton6.setEnabled(true);
+
+                        /*Show current user name*/
+                        jTextField6.setText(current_user_name);
+                        
+                        break;
+                    }
+                    else
+                    {
+                        current_user_name = "";
+                        /*Disable log off button*/
+                        jButton6.setEnabled(false);
+
+                        /*Clear current user name*/
+                        jTextField6.setText("");
+
+                        jTextArea4.append("Unable to log in\n");
+                    }
+                }
+            }
+        }
+        else
+        {
+            validSession = true;
+            /*enable log off button*/
+            jButton6.setEnabled(true);
+        }
+        return validSession;
+    }
+    
+    private void LogOff()
+    {
+        if(mySession.isLoggedOn())
+        {
+            mySession.Logoff();
+            ClearAllDisplayedInfo();
+
+            /*Disable log off button*/
+            jButton6.setEnabled(false);
+
+            /*Clear current user name*/
+            jTextField6.setText("");
+        }
+    }
+    
+    private void ClearAllDisplayedInfo()
+    {
+       
         jTextField2.setText(""); // first name
         jTextField3.setText(""); // last name
         jTextField4.setText(""); // phone
         jTextField5.setText(""); // order date
         jTextArea2.setText("");  // address
         
-        jTextArea3.setText("");  //Order details
+        jButton3.setEnabled(false);    
         
-        jButton1.setEnabled(false);  
-
+        /*Clear the tables*/
+        DefaultTableModel tm1=(DefaultTableModel) jTable1.getModel();
+        tm1.setRowCount(0);
         
-        result = shippingApp.RetrieveOrders();
-        jTextArea4.setText(result.GetMsgStatusStr());
+        DefaultTableModel tm2=(DefaultTableModel) jTable2.getModel();
+        tm2.setRowCount(0);
+        
+    }
+    
+    private void ShowPendingOrders()
+    {
+        OpResult result;
+        
+       ClearAllDisplayedInfo();
+        
+        result = shippingApp.RetrieveOrders(mySession);
+        jTextArea4.append(result.GetMsgStatusStr());
         jTextArea4.append(result.GetErrStatusStr());
         
+        if(!result.GetResultStatus())
+        {
+            return;
+        }
+        
+        DefaultTableModel tm=(DefaultTableModel) jTable1.getModel();
         
         /*do the presentation*/
         for(int i=0;i<shippingApp.GetOrderListSize();i++)
         {
             Order order = shippingApp.GetOrder(i);
-            
             if(order!=null)
             {
                 if(order.shipped == 0)
                 {
-                    String msgString = "PENDING ORDER # " + order.order_id+ " : " + order.order_date +
-                                  " : "+ order.first_name + " : " + order.last_name;
-                            jTextArea1.append(msgString+"\n");
+                    Object myrow[] = {order.order_id, "Pending", order.order_date, order.first_name + " " + order.last_name};
+                    tm.addRow(myrow);
                     
-                            
                     //We have orders for selection*/
                     jButton3.setEnabled(true);                
                 }
             }
         }
+        /*Select the first row by default*/
+        if(tm.getRowCount()> 0)
+        {
+            jTable1.addRowSelectionInterval(0,0);
+            DisplaySelectedOrderDetails();
+        }
     }
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // jButton2 is responsible for refreshing the list of pending
         // orders.
-        ShowPendingOrders();
+        /*Check if session is valid*/
+        Boolean validSession = AuthenticateUser();
         
+        if(validSession)
+        {
+            jButton2.setEnabled(true);
+            jButton4.setEnabled(true);
+            
+            ShowPendingOrders();
+        }
+        else
+        {
+            
+            jButton3.setEnabled(false);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // This button gets the selected line of text from the
-        // order list window jTextArea1. The line of text is parsed for the
-        // order number. Once the order number is parsed, then the order is
-        // retrieved from the orders database. The ordertabel field from the
-        // record contains the name of the table that has the items that make
-        // up the order. This table is opened and all the items are listed
-        // in jTextArea3.
-
-        int beginIndex;                     // Parsing index
-        int endIndex;                       // Parsing index
-        String orderSelection = null;       // Order selected from TextArea1
+    private void DisplaySelectedOrderDetails()
+    {
         String orderID = null;              // Product ID pnemonic
         Boolean orderBlank = false;         // False: order string is not blank
 
-        // this is the selected line of text
-        orderSelection =  jTextArea1.getSelectedText();
-
-        // make sure its not blank
-        if (orderSelection.length() > 0 )
-        {
-            // get the product ID
-            beginIndex = 0;
-            beginIndex = orderSelection.indexOf(" # ", beginIndex);
-            beginIndex = beginIndex + 3; //skip past _#_
-            endIndex = orderSelection.indexOf(" :", beginIndex);
-            orderID = orderSelection.substring(beginIndex,endIndex);
-
-        } else {
-
-            String msgString = ">> Order string is blank...";
-            jTextArea4.setText("\n"+msgString);
-            orderBlank = true;
-
-        } // Blank string check
 
         // If an order was selected, then connect to the orderinfo database. In
         // all normal situations this would be impossible to do since the select
         // button is disabled until an order is selected... just in case the
         // check is here.
 
-        if ( !orderBlank )
+        //if ( !orderBlank )
         {
+            int selected_row = jTable1.getSelectedRow();
+            Object order_obj = jTable1.getValueAt(selected_row, 0);
+            
+            orderID = order_obj.toString();
             Order order = shippingApp.SelectOrder(Integer.parseInt(orderID));
 
             OpResult result = shippingApp.RetrieveOrderItems(order);
             
-            jTextArea4.setText(result.GetMsgStatusStr());
+            jTextArea4.append(result.GetMsgStatusStr());
             jTextArea4.append(result.GetErrStatusStr());
+            
+            DefaultTableModel tm=(DefaultTableModel) jTable2.getModel();
         
             if(result.GetResultStatus() == true)
             {
@@ -403,16 +567,15 @@ public class NewJFrame extends javax.swing.JFrame {
                 jTextField5.setText(order.order_date); // order date
                 jTextArea2.setText(order.address);  // address
 
-                // list the items on the form that comprise the order
-                jTextArea3.setText("");
+                
+                tm.setRowCount(0);
 
                 for(int i=0;i<shippingApp.GetOrderItemListSize();i++)
                 {
                     OrderItem order_item = shippingApp.GetOrderItem(i);
-                    String msgString = "ITEM ID :" + order_item.item_id + ":  PRODUCT ID: " + order_item.product_id +
-                     "  DESCRIPTION: "+ order_item.description + "  PRICE $" + order_item.item_price;
-
-                    jTextArea3.append(msgString + "\n");
+                    
+                    Object myrow[] = {order_item.item_id, order_item.product_id , order_item.description, order_item.item_price};
+                    tm.addRow(myrow);
                 }
                 
                 if(order.shipped == 0)
@@ -425,84 +588,66 @@ public class NewJFrame extends javax.swing.JFrame {
                 }
             }
         } // connect and blank order check
+    }
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // This button gets the selected line of text from the
+        // order list window jTextArea1. The line of text is parsed for the
+        // order number. Once the order number is parsed, then the order is
+        // retrieved from the orders database. The ordertabel field from the
+        // record contains the name of the table that has the items that make
+        // up the order. This table is opened and all the items are listed
+        // in jTextArea3.
+
+        DisplaySelectedOrderDetails();
         
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // This method is responsible changing the status of the order
         // to shipped.
-
-        int beginIndex;                     // Parsing index
-        int endIndex;                       // Parsing index
-        String orderSelection = null;       // Order selected from TextArea1
+       
         String orderID = null;              // Product ID pnemonic
-        Boolean orderBlank = false;         // False: order string is not blank
-
-        // this is the selected line of text
-        orderSelection =  jTextArea1.getSelectedText();
 
         // make sure its not blank
-        if (orderSelection.length() > 0 )
-        {
-            // get the product ID
-            beginIndex = 0;
-            beginIndex = orderSelection.indexOf(" # ", beginIndex);
-            beginIndex = beginIndex + 3; //skip past _#_
-            endIndex = orderSelection.indexOf(" :", beginIndex);
-            orderID = orderSelection.substring(beginIndex,endIndex);
-
-        } else {
-
-            String msgString = ">> Order string is blank...";
-            jTextArea4.setText("\n"+msgString);
-            orderBlank = true;
-
-        } // Blank string check
-
+        
         // If an order was selected, then connect to the orderinfo database. In
         // all normal situations this would be impossible to do since the select
         // button is disabled until an order is selected... just in case the
         // check is here.
-
-        if ( !orderBlank )
-        {
-            OpResult result = shippingApp.ShipOrder(Integer.parseInt(orderID));
+        
+        int selected_row = jTable1.getSelectedRow();
+        Object order_obj = jTable1.getValueAt(selected_row, 0);
             
-            if(result.GetResultStatus())
-            {
-                // Clean up the form
-                jTextArea4.setText("\n"+"Successfully shipped order");
-                /*
-                jButton1.setEnabled(false);
-                jButton3.setEnabled(false);
-                jTextArea1.setText("");
-                jTextArea2.setText("");
-                jTextArea3.setText("");
-                jTextField2.setText("");
-                jTextField3.setText("");
-                jTextField4.setText("");
-                jTextField5.setText("");
-                */
-                
-                ShowPendingOrders();
-            }        
+        orderID = order_obj.toString();
 
-        } // if connect check
+        OpResult result = shippingApp.ShipOrder(Integer.parseInt(orderID), mySession);
+        jTextArea4.append(result.GetMsgStatusStr());
+        jTextArea4.append(result.GetErrStatusStr());
 
+        if(result.GetResultStatus())
+        {
+            // Clean up the form
+            jTextArea4.append("\n"+"Successfully shipped order");
+
+            ShowPendingOrders();
+        }        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void ShowShippedOrders()
     {
-            OpResult result;
+        OpResult result;
         
-        jTextArea1.setText("");
-        jTextArea4.setText("");
-        
+        ClearAllDisplayedInfo();
 
         
-        result = shippingApp.RetrieveOrders();
-        jTextArea4.setText(result.GetMsgStatusStr());
+        result = shippingApp.RetrieveOrders(mySession);
+        jTextArea4.append(result.GetMsgStatusStr());
         jTextArea4.append(result.GetErrStatusStr());
+        
+        if(!result.GetResultStatus())
+        {
+            return;
+        }
         
         jTextField2.setText(""); // first name
         jTextField3.setText(""); // last name
@@ -510,9 +655,9 @@ public class NewJFrame extends javax.swing.JFrame {
         jTextField5.setText(""); // order date
         jTextArea2.setText("");  // address
         
-        jTextArea3.setText("");  //Order details
-        
         jButton1.setEnabled(false);  
+        
+        DefaultTableModel tm=(DefaultTableModel) jTable1.getModel();
         
         /*do the presentation*/
         for(int i=0;i<shippingApp.GetOrderListSize();i++)
@@ -523,21 +668,40 @@ public class NewJFrame extends javax.swing.JFrame {
             {
                 if(order.shipped == 1)
                 {
-                    String msgString = "SHIPPED ORDER # " + order.order_id+ " : " + order.order_date +
-                                  " : "+ order.first_name + " : " + order.last_name;
-                            jTextArea1.append(msgString+"\n");
+                    Object myrow[] = {order.order_id, "Shipped", order.order_date, order.first_name + " " + order.last_name};
+                    tm.addRow(myrow);
                     
                     /*There are orders to select*/
                     jButton3.setEnabled(true);                
                 }
             }
         }
+        /*Select the first row by default*/
+        if(tm.getRowCount()> 0)
+        {
+            jTable1.addRowSelectionInterval(0,0);
+            DisplaySelectedOrderDetails();
+        }
+
     }
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // This button will display the list of orders that have already
         // have been shipped.
-        ShowShippedOrders();
-    
+        
+        /*Check if session is valid*/
+        Boolean validSession = AuthenticateUser();
+        
+        if(validSession)
+        {
+            jButton2.setEnabled(true);
+            jButton4.setEnabled(true);
+            
+            ShowShippedOrders();
+        }
+         else
+        {
+            jButton3.setEnabled(false);
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
@@ -547,6 +711,27 @@ public class NewJFrame extends javax.swing.JFrame {
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        LogOff();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        LogOff();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        LogOff();
+        System.exit(0);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        jTextArea4.setText("");
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
     * @param args the command line arguments
@@ -564,9 +749,13 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -574,20 +763,21 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
     private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextArea jTextArea4;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextArea jTextArea5;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 
 }

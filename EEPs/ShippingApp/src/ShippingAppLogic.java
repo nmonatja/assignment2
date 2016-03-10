@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -45,9 +46,18 @@ public class ShippingAppLogic
         return order;
     }
     
-    public OpResult RetrieveOrders()
+    public OpResult RetrieveOrders(Session mySession)
     {
         OpResult result = new OpResult();
+        
+        
+        if(!mySession.isLoggedOn())
+        {
+            result.errStr = "User is not logged on...\n";
+            return result;
+        }
+            
+        /*No Authorization required for this action*/
         
         try
         {
@@ -56,13 +66,13 @@ public class ShippingAppLogic
         }
         catch(Exception e)
         {
-            result.errStr = "Unable to connect to datasource to retrive orders...";
+            result.errStr = "Unable to connect to datasource to retrive orders...\n";
             result.resultStatus = false;
         }
         
         if(null!=order_list)
         {
-            result.msgStr = "Retrieved orders...";
+            result.msgStr = "Retrieved orders...\n";
             result.resultStatus = true;
         }
         
@@ -92,13 +102,13 @@ public class ShippingAppLogic
             if(order !=null)
             {
                 order_item_list = order.getItems();
-                result.msgStr = "Retrieved orders...";
+                result.msgStr = "Retrieved orders...\n";
                 result.resultStatus = true;
             }
         }
         catch(Exception e)
         {
-            result.errStr = "Unable to connect to datasource to retrive orders...";
+            result.errStr = "Unable to connect to datasource to retrive orders...\n";
             result.resultStatus = false;
         }
         
@@ -127,10 +137,25 @@ public class ShippingAppLogic
         }
     }
     
-    public OpResult ShipOrder(int order_id)
+    public OpResult ShipOrder(int order_id, Session mySession)
     {
         OpResult result = new OpResult();
         
+        if(!mySession.isLoggedOn())
+        {
+            result.errStr = "User is not logged on...\n";
+            return result;
+        }
+        
+        /*Check shipping authority*/
+        String auth_level = mySession.getAuthorizationLevel();
+        
+        if(Objects.equals(auth_level, new String("Read Only"))) 
+        {
+            result.errStr = "\nUser does not have authority to perform action...\n";
+            return result;
+        }
+
         Order order = null;
         try
         {
@@ -138,13 +163,13 @@ public class ShippingAppLogic
             if(order !=null)
             {
                 order.update(order.order_date, order.first_name, order.last_name, order.address, order.phone, order.total_cost, 1, order.order_table);
-                result.msgStr = "Successfully set status to shipped...";
+                result.msgStr = "\nSuccessfully set status to shipped...\n";
                 result.resultStatus = true;
             }
         }
         catch(Exception e)
         {
-            result.errStr = "Unable to perform datasource update to ship orders...";
+            result.errStr = "\nUnable to perform datasource update to ship orders...\n";
             result.resultStatus = false;
         }
         
