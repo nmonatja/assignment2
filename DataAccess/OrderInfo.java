@@ -178,6 +178,19 @@ public class OrderInfo extends DbItem {
 			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
 		}
 		
+		sql = "CREATE TABLE " + order_table +
+                            "(item_id int unsigned not null auto_increment primary key, " +
+                            "product_id varchar(20), description varchar(80), " +
+                            "item_price float(7,2) );";
+		try {
+			Connection conn = openDbConnection(database);
+			int retVal2 = run(conn, sql);
+			
+			closeDbConnection(conn);
+		} catch (Exception e) {
+			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
+		}
+		
 		return retVal;
 	} 
 	
