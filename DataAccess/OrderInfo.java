@@ -115,7 +115,7 @@ public class OrderInfo extends DbItem {
 			clauseBuilder.add("shipped = "+shipped);
 		}
 		if (order_table != null) {
-			clauseBuilder.add("order_table = '"+order_table+"'");
+			clauseBuilder.add("ordertable = '"+order_table+"'");
 		}
 		
 		String sql = String.join(" AND ", clauseBuilder);
@@ -156,7 +156,7 @@ public class OrderInfo extends DbItem {
 		
 		int retVal = 0;
 		
-		String sql = "INSERT into Orders (order_date, first_name, last_name, address, phone, total_cost, shipped, order_table) VALUES ('"+
+		String sql = "INSERT into Orders (order_date, first_name, last_name, address, phone, total_cost, shipped, ordertable) VALUES ('"+
 			order_date+"', '"+first_name+"', '"+last_name+"', '"+address+"', '"+phone+"', "+total_cost+", "+shipped+", '"+order_table+"')";
 		
 		try {
@@ -198,7 +198,7 @@ public class OrderInfo extends DbItem {
 		
 		int retVal = 0;
 		
-		String sql = "INSERT into Orders (order_date, first_name, last_name, address, phone, total_cost, shipped, order_table) VALUES ('"+
+		String sql = "INSERT into Orders (order_date, first_name, last_name, address, phone, total_cost, shipped, ordertable) VALUES ('"+
 			o.order_date+"', '"+o.first_name+"', '"+o.last_name+"', '"+o.address+"', '"+o.phone+"', "+o.total_cost+", "+o.shipped+", '"+o.order_table+"')";
 		
 		try {
@@ -215,6 +215,19 @@ public class OrderInfo extends DbItem {
 			}
 			
 			closeDbConnection(conn);
+			
+			sql = "CREATE TABLE " + order_table +
+	                            "(item_id int unsigned not null auto_increment primary key, " +
+	                            "product_id varchar(20), description varchar(80), " +
+	                            "item_price float(7,2) );";
+			try {
+				Connection conn = openDbConnection(database);
+				int retVal2 = run(conn, sql);
+			
+				closeDbConnection(conn);
+			} catch (Exception e) {
+				throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
+			}
 			
 		} catch (Exception e) {
 			throw new InsertException("database: "+database+" sql:"+sql+" : "+e);
