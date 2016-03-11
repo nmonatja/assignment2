@@ -2,6 +2,8 @@
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,7 +17,6 @@ import java.util.Objects;
  */
 public class OrderAppLogic 
 {
-    
     SeedInventory seed_inv = new SeedInventory();
     
     TreeInventory tree_inv = new TreeInventory();
@@ -30,21 +31,41 @@ public class OrderAppLogic
     
     ReferenceMaterialInventory ref_material_inv = new ReferenceMaterialInventory();
     
+    OpResult  opResult = new OpResult();
+    
     public OrderAppLogic()
     {
         
         
     }
-    
+    public OpResult GetLastOpResult()
+    {
+        return opResult;
+    }
+            
     public ArrayList<ProductItem> LoadProductList(int product_type)
     {
+        opResult.resultStatus   = false;
+        opResult.msgStr         = "";
+        opResult.errStr         = "";
+        
         ArrayList<ProductItem> productItemList  = new ArrayList<ProductItem>();
         
         switch(product_type)
         {
             case 0:
             {
-                ArrayList<SeedItem> item_list = seed_inv.getAll();
+                ArrayList<SeedItem> item_list = null;
+                try 
+                {
+                    item_list = seed_inv.getAll();
+                } catch (SelectException ex) 
+                {
+                    //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+                    opResult.resultStatus = false;
+                    opResult.errStr = ex.getMessage();
+                    break;
+                }
                 if(item_list != null)
                 {
                     for(SeedItem s : item_list)
@@ -60,7 +81,16 @@ public class OrderAppLogic
             }
             case 1:
             {
-                ArrayList<TreeItem> item_list = tree_inv.getAll();
+                ArrayList<TreeItem> item_list = null;
+                try 
+                {
+                    item_list = tree_inv.getAll();
+                } catch (SelectException ex) 
+                {
+                    //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+                    opResult.resultStatus = false;
+                    opResult.errStr = ex.getMessage();
+                }
                 if(item_list != null)
                 {
                     for(TreeItem s : item_list)
@@ -76,7 +106,17 @@ public class OrderAppLogic
             }
             case 2:
             {
-                ArrayList<ShrubItem> item_list = shrub_inv.getAll();
+                ArrayList<ShrubItem> item_list = null;
+                try 
+                {
+                    item_list = shrub_inv.getAll();
+                } 
+                catch (SelectException ex) 
+                {
+                    //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+                    opResult.resultStatus = false;
+                    opResult.errStr = ex.getMessage();
+                }
                 if(item_list != null)
                 {
                     for(ShrubItem s : item_list)
@@ -92,7 +132,17 @@ public class OrderAppLogic
             }
             case 3:
             {
-                ArrayList<ProcessingItem> item_list = processing_inv.getAll();
+                ArrayList<ProcessingItem> item_list = null;
+                try 
+                {
+                    item_list = processing_inv.getAll();
+                } 
+                catch (SelectException ex) 
+                {
+                    //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+                    opResult.resultStatus = false;
+                    opResult.errStr = ex.getMessage();
+                }
                 if(item_list != null)
                 {
                     for(ProcessingItem s : item_list)
@@ -108,7 +158,17 @@ public class OrderAppLogic
             }
             case 4:
             {
-                ArrayList<CultureboxItem> item_list = culture_box_inv.getAll();
+                ArrayList<CultureboxItem> item_list = null;
+                try 
+                {
+                    item_list = culture_box_inv.getAll();
+                } 
+                catch (SelectException ex) 
+                {
+                    //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+                    opResult.resultStatus = false;
+                    opResult.errStr = ex.getMessage();
+                }
                 if(item_list != null)
                 {
                     for(CultureboxItem s : item_list)
@@ -124,7 +184,17 @@ public class OrderAppLogic
             }
             case 5:
             {
-                ArrayList<GenomicItem> item_list = genomic_inv.getAll();
+                ArrayList<GenomicItem> item_list = null;
+                try 
+                {
+                    item_list = genomic_inv.getAll();
+                } 
+                catch (SelectException ex) 
+                {
+                    //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+                    opResult.resultStatus = false;
+                    opResult.errStr = ex.getMessage();
+                }
                 if(item_list != null)
                 {
                     for(GenomicItem s : item_list)
@@ -140,7 +210,17 @@ public class OrderAppLogic
             }
             case 6:
             {
-                ArrayList<ReferenceMaterialItem> item_list = ref_material_inv.getAll();
+                ArrayList<ReferenceMaterialItem> item_list = null;
+                try 
+                {
+                    item_list = ref_material_inv.getAll();
+                } 
+                catch (SelectException ex) 
+                {
+                    //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+                    opResult.resultStatus = false;
+                    opResult.errStr = ex.getMessage();
+                }
                 if(item_list != null)
                 {
                     for(ReferenceMaterialItem s : item_list)
@@ -177,12 +257,14 @@ public class OrderAppLogic
     
     OpResult PlacePurchaseOrder(PurchaseOrder po, Session mySession)
     {
-        OpResult result = new OpResult();
+        opResult.resultStatus   = false;
+        opResult.msgStr         = "";
+        opResult.errStr         = "";
         
         if(!mySession.isLoggedOn())
         {
-            result.errStr = "User is not logged on...\n";
-            return result;
+            opResult.errStr = "User is not logged on...\n";
+            return opResult;
         }
         
         /*Check shipping authority*/
@@ -190,8 +272,8 @@ public class OrderAppLogic
         
         if(Objects.equals(auth_level, new String("Read Only"))) 
         {
-            result.errStr = "\nUser does not have authority to perform action...\n";
-            return result;
+            opResult.errStr = "\nUser does not have authority to perform action...\n";
+            return opResult;
         }
         
         if( Objects.equals(po.first_name, new String("")) ||
@@ -199,8 +281,8 @@ public class OrderAppLogic
             Objects.equals(po.address, new String(""))||
             Objects.equals(po.phone_num, new String("")))
         {
-            result.errStr = "\nCustomer Information not filled out...\n";
-            return result;
+            opResult.errStr = "\nCustomer Information not filled out...\n";
+            return opResult;
         }
         
         Calendar rightNow = Calendar.getInstance();
@@ -227,32 +309,38 @@ public class OrderAppLogic
         
         OrderInfo ordInfo = new OrderInfo();
         
-        int retVal = ordInfo.add(order);
-        
-        for (ProductItem p : po.productItemList)
+        int retVal = 0;
+        try 
         {
-            OrderItem item = new OrderItem(null, p.product_code, p.description, p.price, orderTableName);
-            retVal = order.addItem(item);
+            retVal = ordInfo.add(order);
+            for (ProductItem p : po.productItemList)
+            {
+                OrderItem item = new OrderItem(null, p.product_code, p.description, p.price, orderTableName);
+                retVal = order.addItem(item);
             
+                if(retVal == 0)
+                {
+                    break;
+                }
+            }
             if(retVal == 0)
             {
-                break;
+                opResult.resultStatus = false;
+                opResult.errStr = "Unable to place order...\n";
             }
-        }
-        
-        
-        if(retVal == 0)
+            else
+            {
+                opResult.resultStatus = true;
+                opResult.msgStr = "Successfully placed order...\n";
+            }
+        } 
+        catch (InsertException ex) 
         {
-            result.resultStatus = false;
-            result.errStr = "Unable to place order...\n";
-        }
-        else
-        {
-            result.resultStatus = true;
-            result.msgStr = "Successfully placed order...\n";
+            //Logger.getLogger(OrderAppLogic.class.getName()).log(Level.SEVERE, null, ex);
+            opResult.resultStatus = false;
+            opResult.errStr = ex.getMessage();
         }
         
-        return result;
+        return opResult;
     }
-    
 }

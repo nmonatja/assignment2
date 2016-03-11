@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,11 +20,19 @@ public class ShippingAppLogic
     ArrayList<Order> order_list             = null;
     ArrayList<OrderItem> order_item_list    = null;
     
+    OpResult  opResult                      = new OpResult();
+    
     public ShippingAppLogic()
     {
         
         
     }   
+    
+    public OpResult GetLastOpResult()
+    {
+        return opResult;
+    }
+    
     public int  GetOrderListSize()
     {
         if(order_list != null)
@@ -59,17 +69,16 @@ public class ShippingAppLogic
             
         /*No Authorization required for this action*/
         
-        try
+           
+        try 
         {
-            
             order_list = Order_info.getAll();
-        }
-        catch(Exception e)
+        } 
+        catch (SelectException ex) 
         {
-            result.errStr = "Unable to connect to datasource to retrive orders...\n";
             result.resultStatus = false;
+            result.errStr = ex.getMessage();
         }
-        
         if(null!=order_list)
         {
             result.msgStr = "Retrieved orders...\n";
@@ -82,14 +91,28 @@ public class ShippingAppLogic
     public Order SelectOrder(int order_id)
     {
         Order order = null;
-        try
+        
+        /*Clear order item list*/
+        if(order_item_list !=null)
+        {
+            order_item_list.clear();
+        }
+        
+        try 
         {
             order = Order_info.getById(order_id);
-        }
-        catch(Exception e)
+        } 
+        catch (SelectException ex) 
         {
-            
+            opResult.resultStatus = false;
+            opResult.errStr = ex.getMessage();
         }
+        if(null!=order)
+        {
+            opResult.msgStr = "Sucessfully selected orders..."+ order_id + "\n";
+            opResult.resultStatus = true;
+        }
+        
         return order;
     }
     
@@ -97,21 +120,24 @@ public class ShippingAppLogic
     {
         OpResult result = new OpResult();
 
-        try
+
+        if(order !=null)
         {
-            if(order !=null)
+            try 
             {
                 order_item_list = order.getItems();
-                result.msgStr = "Retrieved orders...\n";
+            } 
+            catch (SelectException ex) 
+            {
+                result.resultStatus = false;
+                result.errStr = ex.getMessage();
+            }
+            if(order_item_list !=null)
+            {
+                result.msgStr = "Successfully retrieved order items for order " + order.order_id+ "\n";
                 result.resultStatus = true;
             }
         }
-        catch(Exception e)
-        {
-            result.errStr = "Unable to connect to datasource to retrive orders...\n";
-            result.resultStatus = false;
-        }
-        
         return result;
     }
     
@@ -157,23 +183,43 @@ public class ShippingAppLogic
         }
 
         Order order = null;
-        try
+        
+        try 
         {
             order = Order_info.getById(order_id);
-            if(order !=null)
+        } 
+        catch (SelectException ex) 
+        {
+            result.resultStatus = false;
+            result.errStr = ex.getMessage();
+        }
+        if(order !=null)
+        {
+            try 
             {
-                order.update(order.order_date, order.first_name, order.last_name, order.address, order.phone, order.total_cost, 1, order.order_table);
-                result.msgStr = "\nSuccessfully set status to shipped...\n";
-                result.resultStatus = true;
+                if(order.update(order.order_date, order.first_name, order.last_name, order.address, order.phone, order.total_cost, 1, order.order_table))
+                {
+                    result.msgStr = "\nSuccessfully set status to shipped...\n";
+                    result.resultStatus = true;
+                }
+            } 
+            catch (UpdateException ex) 
+            {
+                result.resultStatus = false;
+                result.errStr = ex.getMessage();
             }
         }
-        catch(Exception e)
-        {
-            result.errStr = "\nUnable to perform datasource update to ship orders...\n";
-            result.resultStatus = false;
-        }
-        
         return result;
     }
     
+    public Float GetTotalSelectedOrderPrice()
+    {
+        Float total_order_price = new Float(0);
+        
+        for(OrderItem item : order_item_list)
+        {
+            total_order_price = total_order_price + item.item_price;
+        }
+        return total_order_price;
+    }
 }
