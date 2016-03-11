@@ -31,8 +31,6 @@ public class InventoryMainFrame extends javax.swing.JFrame {
        String versionID = "v2.10.11";
        InventoryAppLogic  inventoryApp = new InventoryAppLogic();
         
-
-
     /** Creates new form AddInventoryMainFrame */
     public InventoryMainFrame() {
         initComponents();
@@ -238,7 +236,7 @@ public class InventoryMainFrame extends javax.swing.JFrame {
         Float perUnitCost;              // Cost per tree, seed, or shrub unit
         String productID = null;        // Product id of tree, seed, or shrub
         java.sql.Statement s = null;    // SQL statement pointer
-        String invItem = null;
+        String invItem = null;          //selected inventory item
         
         // Check to make sure inventory item is selected
        
@@ -358,7 +356,6 @@ public class InventoryMainFrame extends javax.swing.JFrame {
             {
                 // get the data from the text fields
                 invItem = jComboBox1.getSelectedItem().toString();
-                System.out.println(invItem);
 
                  //get the inventory item list
                  ArrayList<InventoryItem> inventoryItems = inventoryApp.getInventoryItems (invItem);
@@ -368,57 +365,65 @@ public class InventoryMainFrame extends javax.swing.JFrame {
               //TREE>>EF001::Elephant Foot :: 6::800.00  
              for(int i=0;i<inventoryItems.size();i++)
                 {
-                    if (invItem.equals("Trees"))
-                    {
-                        TreeItem myItem = (TreeItem) inventoryItems.get(i);
-                        msgString = "TREE>>" + myItem.product_code +
-                     "::"+ myItem.description + "::" + myItem.price
-                    + "::" + myItem.quantity ;
-                    }
-                    else if (invItem.equals("Shrubs"))
-                    {
-                        ShrubItem myItem = (ShrubItem) inventoryItems.get(i);
-                        msgString = "SHRUB>>" + myItem.product_code +
-                     "::"+ myItem.description + "::" + myItem.price
-                    + "::" + myItem.quantity ;
-                    }
-                    else if (invItem.equals("Seeds"))
-                    {
-                        SeedItem myItem = (SeedItem) inventoryItems.get(i);
-                        msgString = "SEED>>" + myItem.product_code +
-                     "::"+ myItem.description + "::" + myItem.price
-                    + "::" + myItem.quantity ;
-                    }             
-                    else if (invItem.equals("Culture Boxes"))
-                    {
-                        CultureboxItem myItem = (CultureboxItem) inventoryItems.get(i);
-                        msgString = "CULTURE BOXES>>" + myItem.product_code +
-                     "::"+ myItem.description + "::" + myItem.price
-                    + "::" + myItem.quantity ;
-                    }
-
-                    else if (invItem.equals("Genomics"))
-                    {
-                        GenomicItem myItem = (GenomicItem) inventoryItems.get(i);
-                        msgString = "GENOMICS>>" + myItem.product_code +
-                     "::"+ myItem.description + "::" + myItem.price
-                    + "::" + myItem.quantity ;
-                    }
-
-                    else if (invItem.equals("Processing"))
-                    {
-                        ProcessingItem myItem = (ProcessingItem) inventoryItems.get(i);
-                        msgString = "PROCESSING>>" + myItem.product_code +
-                     "::"+ myItem.description + "::" + myItem.price
-                    + "::" + myItem.quantity ;
-                    }
-
-                    else if (invItem.equals("Ref Materials"))
-                    {
-                        ReferenceMaterialItem myItem = (ReferenceMaterialItem) inventoryItems.get(i);
-                        msgString = "REF MATERIAL>>" + myItem.product_code +
-                     "::"+ myItem.description + "::" + myItem.price
-                    + "::" + myItem.quantity ;
+                    switch (invItem) {
+                        case "Trees":
+                            {
+                                TreeItem myItem = (TreeItem) inventoryItems.get(i);
+                                msgString = "TREE>>" + myItem.product_code +
+                                        "::"+ myItem.description + "::" + myItem.price
+                                        + "::" + myItem.quantity ;
+                                break;
+                            }
+                        case "Shrubs":
+                            {
+                                ShrubItem myItem = (ShrubItem) inventoryItems.get(i);
+                                msgString = "SHRUB>>" + myItem.product_code +
+                                        "::"+ myItem.description + "::" + myItem.price
+                                        + "::" + myItem.quantity ;
+                                break;
+                            }
+                        case "Seeds":
+                            {
+                                SeedItem myItem = (SeedItem) inventoryItems.get(i);
+                                msgString = "SEED>>" + myItem.product_code +
+                                        "::"+ myItem.description + "::" + myItem.price
+                                        + "::" + myItem.quantity ;
+                                break;
+                            }
+                        case "Culture Boxes":
+                            {
+                                CultureboxItem myItem = (CultureboxItem) inventoryItems.get(i);
+                                msgString = "CULTURE BOXES>>" + myItem.product_code +
+                                        "::"+ myItem.description + "::" + myItem.price
+                                        + "::" + myItem.quantity ;
+                                break;
+                            }
+                        case "Genomics":
+                            {
+                                GenomicItem myItem = (GenomicItem) inventoryItems.get(i);
+                                msgString = "GENOMICS>>" + myItem.product_code +
+                                        "::"+ myItem.description + "::" + myItem.price
+                                        + "::" + myItem.quantity ;
+                                break;
+                            }
+                        case "Processing":
+                            {
+                                ProcessingItem myItem = (ProcessingItem) inventoryItems.get(i);
+                                msgString = "PROCESSING>>" + myItem.product_code +
+                                        "::"+ myItem.description + "::" + myItem.price
+                                        + "::" + myItem.quantity ;
+                                break;
+                            }
+                        case "Ref Materials":
+                            {
+                                ReferenceMaterialItem myItem = (ReferenceMaterialItem) inventoryItems.get(i);
+                                msgString = "REF MATERIAL>>" + myItem.product_code +
+                                        "::"+ myItem.description + "::" + myItem.price
+                                        + "::" + myItem.quantity ;
+                                break;
+                            }
+                        default:
+                            break;
                     }
 
                     jTextArea1.append("\n"+msgString);
@@ -454,7 +459,6 @@ public class InventoryMainFrame extends javax.swing.JFrame {
         String invItem = null;
         // this is the selected line of text
         inventorySelection =  jTextArea1.getSelectedText();
-        System.out.println(inventorySelection);
         invItem = jComboBox1.getSelectedItem().toString();
         // make sure the selection is not blank
         if ( inventorySelection != null )
@@ -498,7 +502,7 @@ public class InventoryMainFrame extends javax.swing.JFrame {
                     {
                         
 
-                        //insert inventory item
+                    //delete inventory item
                     inventoryApp.deleteInventoryItem (invItem, productID);
 
                         // let the user know all went well
@@ -534,7 +538,91 @@ public class InventoryMainFrame extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // Decrements the inventory count for a selected item
+        int beginIndex;                     // Parsing index
+        int endIndex;                       // Parsing index
+        String productID = null;            // Product ID pnemonic
+        Boolean IndexNotFound;              // Flag indicating a string index was not found.
+        Boolean connectError = false;       // Error flag
+        String errString = null;            // String for displaying errors
+        int executeUpdateVal;               // Return value from execute indicating effected rows
+        String msgString = null;            // String for displaying non-error messages
+        String tableSelected = null;        // String used to determine which data table to use
+        java.sql.Statement s = null;        // SQL statement pointer
+        String SQLstatement1 = null;        // String for building SQL queries
+        String SQLstatement2 = null;        // String for building SQL queries
+        String inventorySelection = null;   // Inventory text string selected by user
+        IndexNotFound = false;              // Flag indicating that a string index was not found
+        String invItem = null;
+        // this is the selected line of text
+        inventorySelection =  jTextArea1.getSelectedText();
+        invItem = jComboBox1.getSelectedItem().toString();
+       
         
+        // make sure the selection is not blank
+        if ( inventorySelection != null )
+        {
+            // get the product ID - here we get the leading index
+            beginIndex = 0;
+            endIndex = inventorySelection.indexOf(">>",beginIndex);
+
+            if (endIndex < 0 ) {
+                IndexNotFound = true;
+            } else {
+                beginIndex = endIndex+2; //skip past ">>"                                
+            }
+            
+            if ( !IndexNotFound )
+            {
+                // Here we get the trailing index and parse out the productID
+                endIndex = inventorySelection.indexOf(":",beginIndex);
+
+                if (endIndex < 0 ) {
+                    IndexNotFound = true;
+                 } else {
+                    productID = inventorySelection.substring(beginIndex,endIndex);
+                }              
+            }
+           
+            // Now we decrement the inventory count of the item indicated by the productID we
+            // parsed out above from the indicated table.
+            
+            if ( !IndexNotFound )
+            {
+                jTextArea1.setText("");
+                jTextArea1.append( "Decrementing ProductID: " + productID );
+
+                //decrement the inventory item count 
+                
+               
+                    try
+                    {
+                        //decrement inventory item
+                        inventoryApp.decrementInventoryItem (invItem, productID);
+
+                        // execute the update, then query the BD for the table entry for the item just changed
+                        // and display it for the user
+ 
+                        jTextArea1.append("\n\n" + productID + " inventory decremented...");
+
+                    } catch (Exception e) {
+
+                        errString =  "\nProblem with delete:: " + e;
+                        jTextArea1.append(errString);
+
+                    } // try  
+                                       
+            } else {
+
+                jTextArea1.setText("");
+                jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)");      
+
+            }
+        } else {
+
+            jTextArea1.setText("");
+            jTextArea1.append("\nNo items selected...\nSELECT ENTIRE INVENTORY LINE TO ADD ITEM TO ORDER\n(TRIPLE CLICK ITEM LINE)"); 
+
+        } // Blank string check
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
