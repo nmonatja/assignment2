@@ -38,6 +38,8 @@ public class InventoryMainFrame extends javax.swing.JFrame {
     public InventoryMainFrame() {
         initComponents();
         jLabel1.setText("Inventory Management Application " + versionID);
+        
+        jButton5.setEnabled(false);
     }
     
     private Boolean AuthenticateUser() {
@@ -191,6 +193,11 @@ public class InventoryMainFrame extends javax.swing.JFrame {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select product", "Seeds", "Trees", "Shrubs", "Culture Boxes", "Genomics", "Processing", "Ref Materials" }));
 
         jButton5.setText("Log Off");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setText("Exit");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -745,14 +752,19 @@ public class InventoryMainFrame extends javax.swing.JFrame {
 
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
-        LogOff();
+        //LogOff();
     }//GEN-LAST:event_jTextField5ActionPerformed
-
+    
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
         LogOff();
         System.exit(0);
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        LogOff();
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
     * @param args the command line arguments
