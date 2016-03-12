@@ -116,7 +116,14 @@ public class Session {
                 logEvent(logEvent);//log the event
                 
             } catch (Exception e) {
-
+                String errString =  "Error: " + e;
+                 //user not found
+                if (errString.contains("java.lang.NullPointerException"))
+                {
+                    usrname = "User doesn't exist";
+                    logEvent = "Failed Logon";
+                    logEvent(logEvent);//log the event
+                }
                 return false;
 
             } // end try-catch
