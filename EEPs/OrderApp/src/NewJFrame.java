@@ -54,8 +54,10 @@ public class NewJFrame extends javax.swing.JFrame {
         initComponents();
         jLabel1.setText("Order Management Application " + versionID);
         
-        ProductList.addMouseListener(new ProductListMouseAdapter()); 
-        ProductList.addKeyListener(new ProductListKeyListener());
+        ProductList.addMouseListener(new ProductTypeListMouseAdapter()); 
+        ProductList.addKeyListener(new ProductTypeListKeyListener());
+        
+        jTable1.addMouseListener(new ProductListMouseAdapter());
         
         ArrayList<String> ProductTypes = orderApp.GetProductTypes();
         
@@ -79,7 +81,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
     }
    
-    class ProductListMouseAdapter implements MouseListener
+    class ProductTypeListMouseAdapter implements MouseListener
     {
         public void mouseClicked(MouseEvent e) 
         {
@@ -98,7 +100,7 @@ public class NewJFrame extends javax.swing.JFrame {
         {
         }
     }
-    class ProductListKeyListener implements KeyListener
+    class ProductTypeListKeyListener implements KeyListener
     {
         public void keyTyped(KeyEvent e) 
         {
@@ -111,6 +113,30 @@ public class NewJFrame extends javax.swing.JFrame {
             LoadProductList();
         }
     }
+    
+    class ProductListMouseAdapter implements MouseListener
+    {
+        public void mouseClicked(MouseEvent e) 
+        {
+            if(e.getClickCount() == 2)
+            {
+                AddToOrder();
+            }
+        }
+        public void mousePressed(MouseEvent e) 
+        {
+        }
+        public void mouseReleased(MouseEvent e) 
+        {
+        }
+        public void mouseEntered(MouseEvent e) 
+        {
+        }
+        public void mouseExited(MouseEvent e) 
+        {
+        }
+    }
+    
     static class DecimalFormatRenderer extends DefaultTableCellRenderer 
     {
         private static final DecimalFormat formatter = new DecimalFormat( "#########.00" );
@@ -207,7 +233,7 @@ public class NewJFrame extends javax.swing.JFrame {
         if(mySession.isLoggedOn())
         {
             mySession.Logoff();
-            ClearAllDisplayedInfo();
+            ResetOrder();
 
             /*Disable log off button*/
             jButton2.setEnabled(false);
@@ -217,9 +243,24 @@ public class NewJFrame extends javax.swing.JFrame {
         }
     }
     
-    void ClearAllDisplayedInfo()
+    void ResetOrder()
     {
-    
+        ProductList.select(0);
+        
+        //Remove all order items
+        DefaultTableModel tm2= (DefaultTableModel) jTable2.getModel();
+        tm2.setRowCount(0);
+        LoadProductList();
+        
+        //Clear customer information
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextArea4.setText("");
+        jTextField5.setText("");
+        
+        //Disable submit buttons
+        jButton5.setEnabled(false);
+        
     }
 
     void SetOrderListUpdater()
@@ -645,9 +686,9 @@ public class NewJFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
  
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        /*Add to order*/       
-        
+    private void AddToOrder()
+    {
+    
         Boolean validSession = AuthenticateUser();
         
         if(validSession)
@@ -667,6 +708,11 @@ public class NewJFrame extends javax.swing.JFrame {
                 jTable2.addRowSelectionInterval(0,0);
             }
         }
+    }
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        /*Add to order*/       
+        
+        AddToOrder();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
@@ -680,62 +726,71 @@ public class NewJFrame extends javax.swing.JFrame {
         // the list of items is stored. This table is also in the orderinfo
         // database as well.
         
+        Boolean validSession = AuthenticateUser();
         
-        String fn       = jTextField3.getText();
-        String ln       = jTextField4.getText();
-        String addr     = jTextArea4.getText();
-        String phNum    = jTextField5.getText();
-        
-        /*Check if any or the order Info is blank*/
-        String errMsg = "Please fill in the following customer information : ";
-        Boolean incomplete_info = false;
-        if( Objects.equals(fn, new String("")) )
+        if(validSession)
         {
-            errMsg += "First Name, ";
-            incomplete_info = true;
-        }
-        if(Objects.equals(ln, new String("")))
-        {
-            errMsg += "Last Name, ";
-            incomplete_info = true;
-        }
-        if(Objects.equals(addr, new String("")))
-        {
-            errMsg += "Address, ";
-            incomplete_info = true;
-        }
-        if(Objects.equals(phNum, new String("")))
-        {
-            errMsg += "Phone Number";
-            incomplete_info = true;
-        }
-        if(incomplete_info)
-        {
-            JOptionPane.showMessageDialog(this, errMsg);
-        }
-        
-        
-        ArrayList<ProductItem> productItemList  = new ArrayList<ProductItem>();
-        
-        int num_order_items = jTable2.getRowCount();
-        for(int i=0;i< num_order_items;i++)
-        {
-            ProductItem prodItem = new ProductItem( jTable2.getValueAt(i, 0).toString(), 
-                                                    jTable2.getValueAt(i, 1).toString(), 
-                                                    jTable2.getValueAt(i, 2).toString(),
-                                                    1,
-                                                    Float.valueOf(jTable2.getValueAt(i, 3).toString()));  
+            String fn       = jTextField3.getText();
+            String ln       = jTextField4.getText();
+            String addr     = jTextArea4.getText();
+            String phNum    = jTextField5.getText();
+
+            /*Check if any or the order Info is blank*/
+            String errMsg = "Please fill in the following customer information : ";
+            Boolean incomplete_info = false;
+            if( Objects.equals(fn, new String("")) )
+            {
+                errMsg += "First Name, ";
+                incomplete_info = true;
+            }
+            if(Objects.equals(ln, new String("")))
+            {
+                errMsg += "Last Name, ";
+                incomplete_info = true;
+            }
+            if(Objects.equals(addr, new String("")))
+            {
+                errMsg += "Address, ";
+                incomplete_info = true;
+            }
+            if(Objects.equals(phNum, new String("")))
+            {
+                errMsg += "Phone Number";
+                incomplete_info = true;
+            }
+            if(incomplete_info)
+            {
+                JOptionPane.showMessageDialog(this, errMsg);
+            }
+
+
+            ArrayList<ProductItem> productItemList  = new ArrayList<ProductItem>();
+
+            int num_order_items = jTable2.getRowCount();
+            for(int i=0;i< num_order_items;i++)
+            {
+                ProductItem prodItem = new ProductItem( jTable2.getValueAt(i, 0).toString(), 
+                                                        jTable2.getValueAt(i, 1).toString(), 
+                                                        jTable2.getValueAt(i, 2).toString(),
+                                                        1,
+                                                        Float.valueOf(jTable2.getValueAt(i, 3).toString()));  
+
+
+                productItemList.add(prodItem);
+            }
+
+            PurchaseOrder po = new PurchaseOrder(fn, ln, addr, phNum, productItemList);
+
+            OpResult result = orderApp.PlacePurchaseOrder(po, mySession);
+
+            jTextArea3.append(result.GetMsgStatusStr());
+            jTextArea3.append(result.GetErrStatusStr());
             
-            
-            productItemList.add(prodItem);
+            if(result.resultStatus == true)
+            {
+                ResetOrder();
+            }
         }
-        
-        PurchaseOrder po = new PurchaseOrder(fn, ln, addr, phNum, productItemList);
-        
-        OpResult result = orderApp.PlacePurchaseOrder(po, mySession);
-        
-        jTextArea3.append(result.GetMsgStatusStr());
-        jTextArea3.append(result.GetErrStatusStr());
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
@@ -748,7 +803,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
-        
+        //Remove all order items
         DefaultTableModel tm2= (DefaultTableModel) jTable2.getModel();
         tm2.setRowCount(0);
     }//GEN-LAST:event_jButton8ActionPerformed
@@ -756,6 +811,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
         
+        //Remove selected order item
         DefaultTableModel tm2=(DefaultTableModel) jTable2.getModel();
         
         int selected_row = jTable2.getSelectedRow();
